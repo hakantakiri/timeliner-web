@@ -10,6 +10,7 @@ import useSessionState from "./hooks/sessionState"
 import Session from "@/domain/models/session.model"
 import SessionContext from "./context/session.context"
 import Home from "./page"
+import { useRouter } from "next/navigation"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,6 +27,8 @@ export default function RootLayout({
 	const [isLoading, setIsLoading] = useState<boolean>(true)
 	const { sessionState, setSessionState } = useSessionState()
 
+	const router = useRouter()
+
 	useEffect(() => {
 		authService.onSessionChange((session: Session | null) => {
 			setSessionState(session)
@@ -35,6 +38,7 @@ export default function RootLayout({
 		authService.onSignOut(() => {
 			setIsLoading(false)
 			setSessionState(null)
+			router.push("/")
 		})
 	}, [])
 	return (

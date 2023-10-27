@@ -1,6 +1,8 @@
 import { GoogleAuthProvider, signInWithRedirect, signOut } from "firebase/auth"
 import { auth } from "@/io/firebase/firebaseAuth"
+import { User as FirebaseUser } from "firebase/auth"
 import Session from "../models/session.model"
+import { deleteCookie, setCookie } from "cookies-next"
 
 type SessionListener = (session: Session | null) => void
 
@@ -14,16 +16,31 @@ class AuthService {
 	}
 
 	public async updateProviderSession(
-		providerSession: Session | null
+		providerSession: FirebaseUser | null
 	): Promise<void> {
-		if (!providerSession) {
-			this.emmitSessionChange(null)
-			return
+		if (!providerSession) return this.emmitSessionChange(null)
+
+		const idToken = await auth.currentUser?.getIdToken()
+		setCookie("firebaseIdToken", idToken)
+
+		let session: Session = {
+			user: {
+				id: "a",
+				displayName: "a",
+				email: "a",
+				photoUrl: "a",
+				createdDate: "a",
+				modifiedDate: "a",
+				lastSession: "a",
+			},
+			providerSession: providerSession,
 		}
-		this.emmitSessionChange(providerSession) //TODO verify is user is created if not then redirect to create user
+
+		this.emmitSessionChange(session)
 	}
 
 	public async signOut() {
+		deleteCookie("firebaseIdToken")
 		await signOut(auth).then(() => {
 			this.emmitSignOut()
 		})
