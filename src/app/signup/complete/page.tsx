@@ -1,5 +1,7 @@
 "use client"
 import SessionContext from "@/app/context/session.context"
+import authService from "@/domain/services/auth.service"
+import { redirect } from "next/navigation"
 import { useContext, useEffect } from "react"
 
 export default function JoinPage() {
@@ -23,6 +25,13 @@ export default function JoinPage() {
 						<select>Accept terms and services</select>
 						<button onClick={join}>Join</button>
 					</form>
+					<button
+						onClick={() => {
+							authService.signOut().then()
+						}}
+					>
+						Choose another signup method
+					</button>
 				</div>
 			) : (
 				<></>

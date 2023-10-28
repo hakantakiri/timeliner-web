@@ -24,7 +24,7 @@ const ProfilePage = () => {
 					})
 				}}
 			>
-				validate
+				validate session
 			</button>
 		</>
 	)
