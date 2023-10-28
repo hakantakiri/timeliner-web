@@ -3,16 +3,31 @@ import { auth } from "@/io/firebase/firebaseAuth"
 import { User as FirebaseUser } from "firebase/auth"
 import Session from "../models/session.model"
 import { deleteCookie, setCookie } from "cookies-next"
+import User from "../models/user.model"
+import userService from "./user.service"
 
 type SessionListener = (session: Session | null) => void
 
 class AuthService {
+	private session: Session
 	private sessionListeners: SessionListener[] = []
 	private signOutListeners: SessionListener[] = []
+
+	constructor() {
+		this.session = {}
+	}
+
+	public getSession() {
+		return this.session
+	}
 
 	public async signInWithGoogle() {
 		const googleProvider = new GoogleAuthProvider()
 		await signInWithRedirect(auth, googleProvider)
+	}
+
+	public async getIdToken() {
+		return await auth.currentUser?.getIdToken()
 	}
 
 	public async updateProviderSession(
@@ -20,23 +35,15 @@ class AuthService {
 	): Promise<void> {
 		if (!providerSession) return this.emmitSessionChange(null)
 
+		this.session.providerSession = providerSession
 		const idToken = await auth.currentUser?.getIdToken()
 		setCookie("firebaseIdToken", idToken)
+		const user: User | null = await userService.getUserById(
+			providerSession.uid
+		)
+		if (user) this.session.user = user
 
-		let session: Session = {
-			user: {
-				id: "a",
-				displayName: "a",
-				email: "a",
-				photoUrl: "a",
-				createdDate: "a",
-				modifiedDate: "a",
-				lastSession: "a",
-			},
-			providerSession: providerSession,
-		}
-
-		this.emmitSessionChange(session)
+		this.emmitSessionChange(this.session)
 	}
 
 	public async signOut() {

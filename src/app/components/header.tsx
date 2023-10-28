@@ -19,7 +19,7 @@ const Header = () => {
 				</li>
 			</ul>
 			<ul className="flex">
-				{!session?.user ? (
+				{!session?.user || !session?.providerSession ? (
 					<Link href="/signup">Join</Link>
 				) : (
 					<button onClick={signOut}>Sign Out</button>

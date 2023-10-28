@@ -14,7 +14,7 @@ export default function SignUpPage() {
 	}
 	useLayoutEffect(() => {
 		if (sessionContext) {
-			router.push("/profile")
+			router.push("/signup/complete")
 		}
 	}, [])
 

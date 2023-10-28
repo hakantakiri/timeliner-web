@@ -49,17 +49,8 @@ export default function RootLayout({
 						<LoadingPage />
 					) : (
 						<>
-							{sessionState ? (
-								<>
-									<Header />
-									{children}
-								</>
-							) : (
-								<>
-									<Header />
-									{children}
-								</>
-							)}
+							<Header />
+							{children}
 						</>
 					)}
 				</body>
